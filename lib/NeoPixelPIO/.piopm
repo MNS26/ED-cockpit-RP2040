@@ -1,0 +1,12 @@
+{
+	"type": "library",
+	"name": "NeoPixelPIO",
+	"version": "0.0.0",
+	"spec": {
+		"owner": "",
+		"id": null,
+		"name": "NeoPixelPIO",
+		"requirements": null,
+		"uri": null
+	}
+}

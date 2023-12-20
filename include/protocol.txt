@@ -1,0 +1,223 @@
+Instruction Format: [mode, operation, data, data, data, data]
+
+
+RAW: 060102010AFFFFFF
+
+   
+  /-----------------\
+  |  actual frame   |
+06 02 01 0A FF FF FF ??
+|| || || || || || || \\= CRC
+|| || || || || || \\==== Blue byte: 255
+|| || || || || \\======= Green byte: 255
+|| || || || \\========== Red byte: 255
+|| || || \\============= ID: 9 
+|| || \\================ set lights: 1
+|| \\=================== write mode: 2 
+\\====================== frame size (not counting crc or own byte)
+
+Byte 1 (packet lenth)
+
+Byte 2 (mode)
+  |- 0x00: ---
+  |- 0x01: Read data
+  |- 0x02: Write data 
+  \-
+
+Byte 3 (operation):
+- Read
+  |- 0x00: ???
+  |- 0x01: Get button light
+  |- 0x02: Get button state
+  \- 0x03: Get axis state
+
+- Write
+  |- 0x00: ???
+  |- 0x01: Set button light
+  |- 0x02: Override button state
+  \- 0x03: Override axis state
+
+
+Byte 4 (data):
+- Read/Write
+  |- Light ID
+  |- Button ID
+  \- Axis ID
+
+
+Byte 5 (data):
+- Write
+  |- Light
+  |   \- set red value
+  |- Button
+  |   \- State
+  |- Axis
+  |   \- ???
+
+
+Byte 6 (data):
+- Write
+  |- Light
+  |   \- set green value
+  |- Button
+  |   \- enabled
+  |- Axis
+  |   \- ???
+
+
+Byte 7 (data):
+- Write
+  |- Light
+  |   \- set blue value
+  |- Axis
+  |   \- ???
+
+Byte 8 (CRC)
+
+
+001:009:000:DESCRIPTOR         1699730940.322790
+ 05 01 09 02 A1 01 09 01 A1 00 05 09 19 01 29 05
+ 15 00 25 01 95 05 75 01 81 02 95 01 75 03 81 01
+ 05 01 09 30 09 31 09 38 15 81 25 7F 75 08 95 03
+ 81 06 C0 C0
+
+
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               2.00
+  bDeviceClass          239 Miscellaneous Device
+  bDeviceSubClass         2 
+  bDeviceProtocol         1 Interface Association
+  bMaxPacketSize0        64
+  idVendor           0x2e8a 
+  idProduct          0xf00a 
+  bcdDevice            1.00
+  iManufacturer           1 Raspberry Pi
+  iProduct                2 Pico W
+  iSerial                 3 E66138935F286C28
+  bNumConfigurations      1
+  Configuration Descriptor:
+    bLength                 9
+    bDescriptorType         2
+    wTotalLength       0x006b
+    bNumInterfaces          3
+    bConfigurationValue     1
+    iConfiguration          0 
+    bmAttributes         0xa0
+      (Bus Powered)
+      Remote Wakeup
+    MaxPower              100mA
+    Interface Association:
+      bLength                 8
+      bDescriptorType        11
+      bFirstInterface         0
+      bInterfaceCount         2
+      bFunctionClass          2 Communications
+      bFunctionSubClass       2 Abstract (modem)
+      bFunctionProtocol       0 
+      iFunction               0 
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        0
+      bAlternateSetting       0
+      bNumEndpoints           1
+      bInterfaceClass         2 Communications
+      bInterfaceSubClass      2 Abstract (modem)
+      bInterfaceProtocol      0 
+      iInterface              4 TinyUSB Serial
+      CDC Header:
+        bcdCDC               1.20
+      CDC Call Management:
+        bmCapabilities       0x00
+        bDataInterface          1
+      CDC ACM:
+        bmCapabilities       0x02
+          line coding and serial state
+      CDC Union:
+        bMasterInterface        0
+        bSlaveInterface         1 
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x81  EP 1 IN
+        bmAttributes            3
+          Transfer Type            Interrupt
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0008  1x 8 bytes
+        bInterval              16
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        1
+      bAlternateSetting       0
+      bNumEndpoints           2
+      bInterfaceClass        10 CDC Data
+      bInterfaceSubClass      0 
+      bInterfaceProtocol      0 
+      iInterface              0 
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x01  EP 1 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x82  EP 2 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        2
+      bAlternateSetting       0
+      bNumEndpoints           2
+      bInterfaceClass         3 Human Interface Device
+      bInterfaceSubClass      0 
+      bInterfaceProtocol      0 
+      iInterface              0 
+        HID Device Descriptor:
+          bLength                 9
+          bDescriptorType        33
+          bcdHID               1.11
+          bCountryCode            0 Not supported
+          bNumDescriptors         1
+          bDescriptorType        34 Report
+          wDescriptorLength     161
+         Report Descriptors: 
+           ** UNAVAILABLE **
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x83  EP 3 IN
+        bmAttributes            3
+          Transfer Type            Interrupt
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               2
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x02  EP 2 OUT
+        bmAttributes            3
+          Transfer Type            Interrupt
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               2
+Device Status:     0x0000
+  (Bus Powered)
+

@@ -1,8 +1,5 @@
 ''' app/ui/widgets/treeview.py '''
-import sys
-import hid
 import os
-import ast
 from ...utils.config import AppConfig
 from .devicelist import DeviceList
 #from pathlib import Path
@@ -25,16 +22,16 @@ class Settings(QWidget):
     super(Settings, self).__init__()
     self.setWindowTitle("Settings")
     self.setGeometry(0, 0,  650, 500)
-
-    self.deviceName = AppConfig.usb_device
-    self.devicelist = DeviceList(self,self.deviceName)
-    self.appconfig = AppConfig()
+    self.AppConfig = AppConfig()
+    self.SavedDevice = self.AppConfig.usb_device
+    self.devicelist = DeviceList(self,self.SavedDevice)
     self.directory = QLineEdit()
-    self.toggle_log_chkbx = QCheckBox()
-    self.toggle_usb_chkbx = QCheckBox()
+    self.log_checkbox = QCheckBox()
+    self.usb_checkbox = QCheckBox()
 
     self.devicelist.activated.connect(self.update_userdata)
-
+    self.log_checkbox.clicked.connect(lambda x: self.log_click_event(x))
+    self.usb_checkbox.clicked.connect(lambda x: self.usb_click_event(x))
   
     # Setup Grid
     main_layout = QGridLayout()
@@ -53,6 +50,8 @@ class Settings(QWidget):
     main_layout.addWidget(tab,0,0)
 
   def show(self) -> None:
+    self.log_checkbox.setChecked(AppConfig.enable_usb)
+    self.usb_checkbox.setChecked(AppConfig.enable_log)
     return super().show()
 
   
@@ -63,7 +62,7 @@ class Settings(QWidget):
     currentDevice = None
     for device_info in self.devices:
       device_name = f"{device_info['manufacturer_string']} - {device_info['product_string']}"
-      if device_name == self.deviceName:
+      if self.SavedDevice == device_name.rstrip():
         currentDevice = device_info
     if currentDevice:
       self.device.emit(currentDevice)
@@ -75,12 +74,11 @@ class Settings(QWidget):
     # USB tab
 
     toggle = QHBoxLayout()    
-    toggle.addWidget(self.toggle_usb_chkbx)
+    toggle.addWidget(self.usb_checkbox)
     toggle.addWidget(QLabel('Enable USB'))
     toggle.setAlignment(Qt.AlignmentFlag.AlignLeft)
     
     list = QVBoxLayout()
-    self.devicelist.setInsertPolicy(self.devicelist.InsertPolicy.NoInsert)
     list.addWidget(self.devicelist)
 
     pageLayout = QVBoxLayout()
@@ -95,13 +93,13 @@ class Settings(QWidget):
 
   # Journal tab
   def journal(self) -> QWidget:
-    self.directory.setText(self.appconfig.game_log_dir)
+    self.directory.setText(self.AppConfig.game_log_dir)
 
     file_browser_btn = QPushButton('Browse')
     file_browser_btn.clicked.connect(lambda: self.open_directory_dialog('Elite Dangerous Logs'))
 
     toggle = QHBoxLayout()    
-    toggle.addWidget(self.toggle_log_chkbx)
+    toggle.addWidget(self.log_checkbox)
     toggle.addWidget(QLabel('Enable Journal'))
     toggle.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
@@ -150,6 +148,17 @@ class Settings(QWidget):
 
 
 
+  def log_click_event(self, click) -> None:
+    AppConfig.enable_log = click
+    print(click)
+    pass
+
+  def usb_click_event(self, click) -> None:
+    AppConfig.enable_usb = click
+    print(click)
+    pass
+
+
   def update_userdata(self,index):
 #    if index>= 0:
       selected_index = self.devicelist.currentIndex()
@@ -165,10 +174,10 @@ class Settings(QWidget):
   def open_directory_dialog(self,section=None ) -> None:
 
     # Open the file dialog in the specified directory
-    initial_directory = str(os.path.expanduser('~')) if self.appconfig.game_log_dir == "" else self.appconfig.game_log_dir
+    initial_directory = str(os.path.expanduser('~')) if self.AppConfig.game_log_dir == "" else self.AppConfig.game_log_dir
     selected_directory = QFileDialog.getExistingDirectory(self, "Select Journal directory", initial_directory)
 
     if selected_directory:
       self.directory.setText(selected_directory)
-      self.appconfig.game_log_dir = selected_directory
-      self.appconfig.save_setting(section, 'directory', selected_directory)  
+      self.AppConfig.game_log_dir = selected_directory
+      self.AppConfig.save_setting(section, 'directory', selected_directory)  

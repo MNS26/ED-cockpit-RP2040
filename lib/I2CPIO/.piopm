@@ -1,0 +1,12 @@
+{
+	"type": "library",
+	"name": "I2CPIO",
+	"version": "0.0.0",
+	"spec": {
+		"owner": "",
+		"id": null,
+		"name": "I2CPIO",
+		"requirements": null,
+		"uri": null
+	}
+}

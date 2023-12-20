@@ -3,13 +3,15 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QTextEdit
 
-from .widgets.devicelist import DeviceList
 from ..utils.config import AppConfig
 from ..utils.filewatcher import FileWatcher
+#from ..utils.usb import HidData
+
 from .widgets.menubar import MenuBar
 from .widgets.toolbar import ToolBar
 from .widgets.statusbar import StatusBar
 from .widgets.settings import Settings
+
 
 class MainWindow(QMainWindow):
   """
@@ -27,22 +29,27 @@ class MainWindow(QMainWindow):
     """
     super().__init__()
 
-    # Setting variables
-    self.appconfig = AppConfig()
+    self.AppConfig = AppConfig()
     self.fs_watcher = FileWatcher()
-    self.deviceInfo = None
+    self.device = {}
     self.settings = Settings()
+
+    # Setting variables
+    self.path_config = self.AppConfig.config_file_path
+    self.app_path = self.AppConfig.main_dir
+    self.game_log = self.AppConfig.game_log_dir
+    self.enable_game_log = self.AppConfig.enable_log
+    self.enable_usb = self.AppConfig.enable_usb
+    #self.hidData = HidData([])
+
     
-    self.path_config = self.appconfig.config_file_path
-    self.app_path = self.appconfig.main_dir
-    self.game_log = self.appconfig.game_log_dir
- 
-        
     self.settings.directory.textChanged.connect(lambda x: self.fs_watcher.update_directory(x))
     self.settings.deviceNameChanged.connect(self.handle_user_data_changed)
-    self.settings.device.connect(lambda x: print(x))
-    self.settings.getCurrentDevice()
+    self.settings.device.connect(lambda x:  self.handle_device_change(x) )
+    #self.settings.log_checkbox.clicked.connect(lambda x: self.handle_log_check_event(x))
+    #self.settings.usb_checkbox.clicked.connect(lambda x: self.handle_usb_check_event(x))
 
+    self.settings.getCurrentDevice()
     self.fs_watcher.initialize()
     self.fs_watcher.start()
 
@@ -74,10 +81,6 @@ class MainWindow(QMainWindow):
     
     layout.addWidget(self.editbox2, stretch=1)
     layout.addWidget(self.editbox2)
-    
-  
-  
-
   
   def create_toolbars(self) -> None:
     """
@@ -109,7 +112,6 @@ class MainWindow(QMainWindow):
       self.app_path + "/resources/assets/icons/window/exit.ico",
       self.exit_app)
 
-
     self.addToolBar(
       Qt.ToolBarArea.TopToolBarArea,
       self.topbar)
@@ -138,7 +140,6 @@ class MainWindow(QMainWindow):
     
     self.close()
 
-
   def settings_window(self) -> None:
     """
     Event handler for the "Settings" button. Displays the "Settings" window.
@@ -152,14 +153,28 @@ class MainWindow(QMainWindow):
     self.settings.activateWindow()
     self.settings.show()
 
-  def handle_user_data_changed(self, user_data) -> None:
-    # Do something with the new_user_data in your main window
-    self.appconfig.save_setting('USB device','device',str(user_data))
-
-
   def privacy_window(self) -> None:
     """
     Event handler for the "Privacy" button. Displays the "Privacy" window.
     """
     print("privacy_window")
 
+
+  def handle_user_data_changed(self, user_data) -> None:
+    # Do something with the new_user_data in your main window
+    self.AppConfig.save_setting('USB device','device',str(user_data))
+
+  def handle_device_change(self, device) -> None:
+    # Do something with the new_user_data in your main window
+    print(device)
+
+
+  def handle_log_check_event(self, check) -> None:
+    print(f"log check: {check}")
+    self.AppConfig.save_setting('Elite Dangerous Logs','enabled',str(check))
+    pass
+
+  def handle_usb_check_event(self, check) -> None:
+    print(f"usb check: {check}")
+    self.AppConfig.save_setting('USB device','enabled',str(check))
+    pass

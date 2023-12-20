@@ -8,11 +8,12 @@ class AppConfig:
   """
   APP_NAME: str = "PyQt template"
   # Default is users home directory
-  enable_game_log: bool = False
+  enable_log: bool = False
   enable_usb: bool = False
   game_log_dir = ''
   usb_device = ''
-
+  def __init__(self) -> None:
+    self.load_config()
 
   # Get the directory of the current script
   script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -46,10 +47,11 @@ class AppConfig:
 
     if 'Elite Dangerous Logs' in config and 'Enabled' in config['Elite Dangerous Logs']:
       if 'True' == config['Elite Dangerous Logs']['enabled']:
-        AppConfig.enable_game_log = True
+        AppConfig.enable_log = True
 
     if 'Elite Dangerous Logs' in config and 'Directory' in config['Elite Dangerous Logs']:
-      AppConfig.game_log_dir = config['Elite Dangerous Logs']['Directory']
+      if os.path.exists(config['Elite Dangerous Logs']['Directory']):
+        AppConfig.game_log_dir = config['Elite Dangerous Logs']['Directory']
 
 
     if 'USB device' in config and 'enabled' in config['USB device']:
@@ -57,8 +59,7 @@ class AppConfig:
         AppConfig.enable_usb = True
 
     if 'USB device' in config and 'Device' in config['USB device']:
-      AppConfig.usb_device = config['USB device']['Device']
-
+      AppConfig.usb_device = config['USB device']['device']
 
   def save_setting(self, section, parameter, value):
     config = configparser.ConfigParser()

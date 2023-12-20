@@ -571,8 +571,7 @@ typedef enum
 #define HID_REPORT_DATA_2(data) , U16_TO_U8S_LE(data)
 #define HID_REPORT_DATA_3(data) , U32_TO_U8S_LE(data)
 
-#define HID_REPORT_ITEM(data, tag, type, size) \
-  (((tag) << 4) | ((type) << 2) | (size)) HID_REPORT_DATA_##size(data)
+#define HID_REPORT_ITEM(data, tag, type, size) (((tag) << 4) | ((type) << 2) | (size)) HID_REPORT_DATA_##size(data)
 
 // Report Item Types
 enum {
@@ -600,31 +599,31 @@ enum {
 
 //------------- Input, Output, Feature - HID 1.11 section 6.2.2.5 -------------//
 #define HID_DATA             (0<<0)
-#define HID_CONSTANT         (1<<0)
+#define HID_CONSTANT         (1<<0) //1
 
 #define HID_ARRAY            (0<<1)
-#define HID_VARIABLE         (1<<1)
+#define HID_VARIABLE         (1<<1) //2
 
 #define HID_ABSOLUTE         (0<<2)
-#define HID_RELATIVE         (1<<2)
+#define HID_RELATIVE         (1<<2) //4
 
 #define HID_WRAP_NO          (0<<3)
-#define HID_WRAP             (1<<3)
+#define HID_WRAP             (1<<3) //8
 
 #define HID_LINEAR           (0<<4)
-#define HID_NONLINEAR        (1<<4)
+#define HID_NONLINEAR        (1<<4) //16
 
 #define HID_PREFERRED_STATE  (0<<5)
-#define HID_PREFERRED_NO     (1<<5)
+#define HID_PREFERRED_NO     (1<<5) //32
 
 #define HID_NO_NULL_POSITION (0<<6)
-#define HID_NULL_STATE       (1<<6)
+#define HID_NULL_STATE       (1<<6) //64
 
 #define HID_NON_VOLATILE     (0<<7)
-#define HID_VOLATILE         (1<<7)
+#define HID_VOLATILE         (1<<7) //128
 
 #define HID_BITFIELD         (0<<8)
-#define HID_BUFFERED_BYTES   (1<<8)
+#define HID_BUFFERED_BYTES   (1<<8) //256
 
 //------------- Collection Item - HID 1.11 section 6.2.2.6 -------------//
 enum {
@@ -719,33 +718,93 @@ enum {
 
 /// HID Usage Table - Table 1: Usage Page Summary
 enum {
-  HID_USAGE_PAGE_DESKTOP         = 0x01,
-  HID_USAGE_PAGE_SIMULATE        = 0x02,
-  HID_USAGE_PAGE_VIRTUAL_REALITY = 0x03,
-  HID_USAGE_PAGE_SPORT           = 0x04,
-  HID_USAGE_PAGE_GAME            = 0x05,
-  HID_USAGE_PAGE_GENERIC_DEVICE  = 0x06,
-  HID_USAGE_PAGE_KEYBOARD        = 0x07,
-  HID_USAGE_PAGE_LED             = 0x08,
-  HID_USAGE_PAGE_BUTTON          = 0x09,
-  HID_USAGE_PAGE_ORDINAL         = 0x0a,
-  HID_USAGE_PAGE_TELEPHONY       = 0x0b,
-  HID_USAGE_PAGE_CONSUMER        = 0x0c,
-  HID_USAGE_PAGE_DIGITIZER       = 0x0d,
-  HID_USAGE_PAGE_PID             = 0x0f,
-  HID_USAGE_PAGE_UNICODE         = 0x10,
-  HID_USAGE_PAGE_ALPHA_DISPLAY   = 0x14,
-  HID_USAGE_PAGE_MEDICAL         = 0x40,
-  HID_USAGE_PAGE_MONITOR         = 0x80, //0x80 - 0x83
-  HID_USAGE_PAGE_POWER           = 0x84, // 0x084 - 0x87
-  HID_USAGE_PAGE_BARCODE_SCANNER = 0x8c,
-  HID_USAGE_PAGE_SCALE           = 0x8d,
-  HID_USAGE_PAGE_MSR             = 0x8e,
-  HID_USAGE_PAGE_CAMERA          = 0x90,
-  HID_USAGE_PAGE_ARCADE          = 0x91,
-  HID_USAGE_PAGE_VENDOR          = 0xFF00 // 0xFF00 - 0xFFFF
+  HID_USAGE_PAGE_UNDEFINED                        = 0x00,
+  HID_USAGE_PAGE_DESKTOP                          = 0x01,
+  HID_USAGE_PAGE_SIMULATE                         = 0x02,
+  HID_USAGE_PAGE_VIRTUAL_REALITY                  = 0x03,
+  HID_USAGE_PAGE_SPORT                            = 0x04,
+  HID_USAGE_PAGE_GAME                             = 0x05,
+  HID_USAGE_PAGE_GENERIC_DEVICE                   = 0x06,
+  HID_USAGE_PAGE_KEYBOARD                         = 0x07,
+  HID_USAGE_PAGE_LED                              = 0x08,
+  HID_USAGE_PAGE_BUTTON                           = 0x09,
+  HID_USAGE_PAGE_ORDINAL                          = 0x0A,
+  HID_USAGE_PAGE_TELEPHONY                        = 0x0B,
+  HID_USAGE_PAGE_CONSUMER                         = 0x0C,
+  HID_USAGE_PAGE_DIGITIZER                        = 0x0D,
+  HID_USAGE_PAGE_PID                              = 0x0F,
+  HID_USAGE_PAGE_UNICODE                          = 0x10,
+  HID_USAGE_PAGE_ALPHA_DISPLAY                    = 0x14,
+  HID_USAGE_PAGE_MEDICAL                          = 0x40,
+  HID_USAGE_PAGE_MONITOR                          = 0x80, //0x80 - 0x83
+  HID_USAGE_PAGE_POWER                            = 0x84, //0x084 - 0x87
+  HID_USAGE_PAGE_BARCODE_SCANNER                  = 0x8C,
+  HID_USAGE_PAGE_SCALE                            = 0x8D,
+  HID_USAGE_PAGE_MSR                              = 0x8E,
+  HID_USAGE_PAGE_CAMERA                           = 0x90,
+  HID_USAGE_PAGE_ARCADE                           = 0x91,
+  HID_USAGE_PAGE_VENDOR                           = 0xFF //0xFF - 0xFFFF
 };
 
+
+/// HID Usage Table - Table 5: Simulation Controls Page
+enum {
+  HID_CONTROL_PAGE_UNDEFINED                      = 0x00,
+  HID_CONTROL_PAGE_FLIGHT_SIMULATION              = 0x01,
+  HID_CONTROL_PAGE_AUTOMOBILE_SIMULATION          = 0x02,
+  HID_CONTROL_PAGE_TANK_SIMULATION                = 0x03,
+  HID_CONTROL_PAGE_SPACESHIP_SIMULATION           = 0x04,
+  HID_CONTROL_PAGE_SUBMARINE_SIMULATION           = 0x05,
+  HID_CONTROL_PAGE_SAILING_SIMULATION             = 0x06,
+  HID_CONTROL_PAGE_MOTORCYCLE_SIMULATION          = 0x07,
+  HID_CONTROL_PAGE_SPORTS_SIMULATION              = 0x08,
+  HID_CONTROL_PAGE_AIRPLANE_SIMULATION            = 0x09,
+  HID_CONTROL_PAGE_MAGIC_CARPET_SIMULATION        = 0x0A,
+  HID_CONTROL_PAGE_HELICOPTER_SIMULATION          = 0x0B,
+  HID_CONTROL_PAGE_BICYCLE_SIMULATION             = 0x0C,
+  // RESERVED 0D - 1F
+  HID_CONTROL_PAGEFLIGHT_CONTROL_STICK            = 0x20,
+  HID_CONTROL_PAGEFLIGHT_STICK                    = 0x21,
+  HID_CONTROL_PAGECYCLIC_CONTROL                  = 0x22,
+  HID_CONTROL_PAGECYCLIC_TRIM                     = 0x23,
+  HID_CONTROL_PAGEFLIGHT_YOKE                     = 0x24,
+  HID_CONTROL_PAGETRACK_CONTROL                   = 0x25,
+  // RESERVED 26 - AF
+  AILERON                                         = 0xB0,
+  AILERON_TRIM                                    = 0xB1,
+  ANTI_TORQUE_CONTROL                             = 0xB2,
+  AUTOPILOT_ENABLE                                = 0xB3,
+  CHAFF_RELEASE                                   = 0xB4,
+  COLLECTIVE_CONTROL                              = 0xB5,
+  DRIVE_BRAKE                                     = 0xB6,
+  ELECTRIC_COUNTERMEASURES                        = 0xB7,
+  ELEVATOR                                        = 0xB8,
+  ELEVATOR_TRIM                                   = 0xB9,
+  RUDDER                                          = 0xBA,
+  THROTTLE                                        = 0xBB,
+  FLIGHT_COMMUNICATIONS                           = 0xBC,
+  FLARE_RELEASE                                   = 0xBD,
+  LANDING_GEAR                                    = 0xBE,
+  TOE_BRAKE                                       = 0xBF,
+  TRIGGER                                         = 0xC0,
+  WEAPONS_ARM                                     = 0xC1,
+  WEAPONS_SELECT                                  = 0xC2,
+  WING_FLAPS                                      = 0xC3,
+  ACCELERATOR                                     = 0xC4,
+  BRAKE                                           = 0xC5,
+  CLUTCH                                          = 0xC6,
+  SHIFTER                                         = 0xC7,
+  STEERING                                        = 0xC8,
+  TURRET_DIRECTION                                = 0xC9,
+  BARREL_ELEVATION                                = 0xCA,
+  DIVE_PLANE                                      = 0xCB,
+  BALLAST                                         = 0xCC,
+  BICYCLE_CRANK                                   = 0xCD,
+  HANDLE_BARS                                     = 0xCE,
+  FRONT_BRAKE                                     = 0xCF,
+  REAR_BRAKE                                      = 0xD0,
+  // RESERVED D1 - FFFF
+};
 /// HID Usage Table - Table 6: Generic Desktop Page
 enum {
   HID_USAGE_DESKTOP_POINTER                               = 0x01,
@@ -857,7 +916,7 @@ enum
   HID_USAGE_GAME_GUN_AUTOMATIC                            = 0x35,
   HID_USAGE_GAME_GUN_SAFETY                               = 0x36,
   HID_USAGE_GAME_GAMEPAD_FIRE_JUMP                        = 0x37,
-  /* NO 39 */
+  /* NO 38 */
   HID_USAGE_GAME_GAMEPAD_TRIGGER                          = 0x39
   /* 3A-FFFF RESERVED*/
 };

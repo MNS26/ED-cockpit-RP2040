@@ -60,7 +60,10 @@
 		"streambuf": "cpp",
 		"cinttypes": "cpp",
 		"typeinfo": "cpp",
-		"*.bak": "plaintext"
+		"*.bak": "plaintext",
+		"i2c.pio.h": "c",
+		"pio.h": "c",
+		"*.pio": "c"
 	},
 	"C_Cpp.dimInactiveRegions": true,
   "editor.insertSpaces": false,
